@@ -51,25 +51,26 @@
             </p>
 
             <!--
-                O JavaScript poderá alterar
-                o nome da sala futuramente.
+                O JavaScript vai preencher
+                essas informações através da API.
             -->
+
             <h1 id="room-name">
-                Sala 204
+                Carregando...
             </h1>
 
             <p
                 class="room-location"
                 id="room-location"
             >
-                Bloco B · Laboratório de Informática
+                Carregando informações da sala...
             </p>
 
         </section>
 
 
         <!-- ==============================
-             FORMULÁRIO
+             FORMULÁRIO DE PROBLEMA
         =============================== -->
 
         <section class="problem-section">
@@ -84,12 +85,12 @@
 
 
             <!--
-                Todas as opções possuem:
-                
-                data-categoria
+                Cada botão possui uma categoria.
 
-                Esse valor será enviado
-                posteriormente para a API.
+                O JavaScript identifica qual opção
+                foi selecionada através de:
+
+                data-categoria
             -->
 
             <div class="problem-grid">
@@ -244,7 +245,7 @@
 
 
             <!-- ==============================
-                 BOTÃO
+                 ENVIO
             =============================== -->
 
             <button
@@ -265,8 +266,7 @@
 
 
             <!--
-                Área onde vamos mostrar mensagens
-                de sucesso ou erro.
+                Mensagens de sucesso ou erro
             -->
 
             <div
@@ -294,12 +294,7 @@
     </main>
 
 
-    <!--
-        Importamos o JavaScript no final da página.
-
-        Isso garante que o HTML já tenha sido
-        carregado quando o JavaScript executar.
-    -->
+    <!-- JavaScript da página -->
 
     <script src="js/sala.js"></script>
 

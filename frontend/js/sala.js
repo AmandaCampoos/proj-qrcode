@@ -12,50 +12,20 @@ CONFIGURAÇÃO DA API
 ----------------------------------------------------
 */
 
-/*
-    Endereço onde nosso FastAPI está rodando.
-
-    Enquanto estamos desenvolvendo localmente:
-
-    http://127.0.0.1:8000
-
-    Quando colocarmos na AWS, esse endereço será
-    substituído pelo endereço da API em produção.
-*/
-
 const API_URL = "http://127.0.0.1:8000";
 
 
 /*
 ----------------------------------------------------
-IDENTIFICAÇÃO DA SALA
+ELEMENTOS DA PÁGINA
 ----------------------------------------------------
 */
 
-/*
-    Por enquanto estamos trabalhando com a Sala 204.
+const roomName =
+    document.getElementById("room-name");
 
-    Mais para frente o QR Code poderá abrir algo como:
-
-    sala.html?sala=1
-
-    e o JavaScript descobrirá automaticamente
-    qual sala precisa carregar.
-*/
-
-const salaId = 1;
-
-
-/*
-----------------------------------------------------
-ELEMENTOS HTML
-----------------------------------------------------
-*/
-
-/*
-    Encontramos os elementos da página através
-    dos seus IDs/classes.
-*/
+const roomLocation =
+    document.getElementById("room-location");
 
 const problemOptions =
     document.querySelectorAll(".problem-option");
@@ -75,18 +45,174 @@ const message =
 
 /*
 ----------------------------------------------------
-VARIÁVEL DA CATEGORIA SELECIONADA
+IDENTIFICAÇÃO DA SALA PELA URL
+----------------------------------------------------
+
+Exemplo:
+
+sala.html?sala=1
+
+O código abaixo pega o número 1.
+
+Isso será muito importante quando criarmos
+os QR Codes.
+*/
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const salaId =
+    params.get("sala");
+
+
+/*
+----------------------------------------------------
+CATEGORIA SELECIONADA
+----------------------------------------------------
+*/
+
+let selectedCategory = null;
+
+
+/*
+----------------------------------------------------
+VALIDAÇÃO DA SALA
 ----------------------------------------------------
 */
 
 /*
-    Aqui vamos guardar qual problema
-    o usuário selecionou.
-
-    Inicialmente não existe nenhum.
+    Se a URL não tiver o parâmetro "sala",
+    não conseguimos saber qual sala mostrar.
 */
 
-let selectedCategory = null;
+if (!salaId) {
+
+    showMessage(
+        "Sala não identificada.",
+        "error"
+    );
+
+} else {
+
+    /*
+        Se temos o ID da sala,
+        buscamos os dados na API.
+    */
+
+    carregarSala();
+
+}
+
+
+/*
+----------------------------------------------------
+CARREGAR SALA
+----------------------------------------------------
+*/
+
+async function carregarSala() {
+
+    try {
+
+        /*
+            Fazemos uma requisição:
+
+            GET /salas/{id}
+
+            Exemplo:
+
+            GET /salas/1
+        */
+
+        const response = await fetch(
+            `${API_URL}/salas/${salaId}`
+        );
+
+
+        /*
+            Caso a API retorne erro,
+            interrompemos o processo.
+        */
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Sala não encontrada."
+            );
+
+        }
+
+
+        /*
+            Transformamos a resposta
+            em objeto JavaScript.
+        */
+
+        const sala =
+            await response.json();
+
+
+        /*
+            Atualizamos o nome da sala.
+        */
+
+        roomName.textContent =
+            sala.nome;
+
+
+        /*
+            Montamos a localização.
+
+            Exemplo:
+
+            Bloco B · Laboratório de informática
+        */
+
+        let locationText =
+            sala.bloco || "";
+
+
+        if (sala.descricao) {
+
+            if (locationText) {
+
+                locationText += " · ";
+
+            }
+
+            locationText += sala.descricao;
+
+        }
+
+
+        roomLocation.textContent =
+            locationText;
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar sala:",
+            error
+        );
+
+
+        roomName.textContent =
+            "Sala não encontrada";
+
+
+        roomLocation.textContent =
+            "Verifique o QR Code utilizado";
+
+
+        showMessage(
+            "Não foi possível carregar os dados da sala.",
+            "error"
+        );
+
+    }
+
+}
 
 
 /*
@@ -95,65 +221,62 @@ SELEÇÃO DO PROBLEMA
 ----------------------------------------------------
 */
 
-/*
-    Percorremos todos os botões:
+problemOptions.forEach(
+    function (option) {
 
-    Projetor
-    Internet
-    Iluminação
-    etc.
+        option.addEventListener(
+            "click",
+            function () {
 
-    Quando o usuário clicar em um deles,
-    identificamos a categoria.
-*/
+                /*
+                    Remove a seleção anterior.
+                */
 
-problemOptions.forEach(function (option) {
+                problemOptions.forEach(
+                    function (item) {
 
-    option.addEventListener("click", function () {
+                        item.classList.remove(
+                            "selected"
+                        );
 
-        /*
-            Remove a seleção visual de todas
-            as opções.
-        */
-
-        problemOptions.forEach(function (item) {
-
-            item.classList.remove("selected");
-
-        });
+                    }
+                );
 
 
-        /*
-            Adiciona a classe "selected"
-            somente no botão clicado.
-        */
+                /*
+                    Marca a opção clicada.
+                */
 
-        option.classList.add("selected");
-
-
-        /*
-            Recupera o valor definido em:
-
-            data-categoria="projetor"
-
-            data-categoria="internet"
-
-            etc.
-        */
-
-        selectedCategory =
-            option.dataset.categoria;
+                option.classList.add(
+                    "selected"
+                );
 
 
-        /*
-            Limpa mensagens anteriores.
-        */
+                /*
+                    Guarda a categoria.
 
-        clearMessage();
+                    Exemplo:
 
-    });
+                    projetor
+                    internet
+                    limpeza
+                */
 
-});
+                selectedCategory =
+                    option.dataset.categoria;
+
+
+                /*
+                    Remove mensagens anteriores.
+                */
+
+                clearMessage();
+
+            }
+        );
+
+    }
+);
 
 
 /*
@@ -167,8 +290,24 @@ submitButton.addEventListener(
     async function () {
 
         /*
-            Antes de enviar precisamos verificar
-            se o usuário selecionou uma categoria.
+            Verificamos se existe uma sala.
+        */
+
+        if (!salaId) {
+
+            showMessage(
+                "Não foi possível identificar a sala.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+            Verificamos se o usuário
+            selecionou um problema.
         */
 
         if (!selectedCategory) {
@@ -179,11 +318,12 @@ submitButton.addEventListener(
             );
 
             return;
+
         }
 
 
         /*
-            Pegamos o texto digitado.
+            Pegamos a descrição.
         */
 
         const descriptionValue =
@@ -191,8 +331,8 @@ submitButton.addEventListener(
 
 
         /*
-            Mostramos um pequeno feedback
-            enquanto a API está sendo chamada.
+            Alteramos o botão enquanto
+            estamos enviando os dados.
         */
 
         submitButton.disabled = true;
@@ -204,10 +344,7 @@ submitButton.addEventListener(
         try {
 
             /*
-                Fazemos uma requisição POST
-                para nossa API.
-
-                Endpoint:
+                Enviamos o chamado para a API.
 
                 POST /chamados/
             */
@@ -219,23 +356,30 @@ submitButton.addEventListener(
                     method: "POST",
 
                     headers: {
-                        "Content-Type": "application/json"
+
+                        "Content-Type":
+                            "application/json"
+
                     },
-
-                    /*
-                        Corpo enviado para o FastAPI.
-
-                        O formato precisa ser igual
-                        ao nosso ChamadoCreate.
-                    */
 
                     body: JSON.stringify({
 
-                        sala_id: salaId,
+                        /*
+                            Aqui está a diferença
+                            principal:
 
-                        categoria: selectedCategory,
+                            agora usamos o ID real
+                            encontrado na URL.
+                        */
 
-                        descricao: descriptionValue || null
+                        sala_id:
+                            Number(salaId),
+
+                        categoria:
+                            selectedCategory,
+
+                        descricao:
+                            descriptionValue || null
 
                     })
 
@@ -244,8 +388,7 @@ submitButton.addEventListener(
 
 
             /*
-                Se a API retornar erro,
-                lançamos uma exceção.
+                Verificamos se a API retornou erro.
             */
 
             if (!response.ok) {
@@ -255,15 +398,14 @@ submitButton.addEventListener(
 
                 throw new Error(
                     errorData.detail ||
-                    "Não foi possível registrar o chamado."
+                    "Erro ao registrar chamado."
                 );
 
             }
 
 
             /*
-                Transformamos a resposta
-                da API em objeto JavaScript.
+                Pegamos o chamado criado.
             */
 
             const data =
@@ -271,7 +413,7 @@ submitButton.addEventListener(
 
 
             /*
-                Mostramos mensagem de sucesso.
+                Mostramos confirmação.
             */
 
             showMessage(
@@ -296,19 +438,15 @@ submitButton.addEventListener(
             problemOptions.forEach(
                 function (item) {
 
-                    item.classList.remove("selected");
+                    item.classList.remove(
+                        "selected"
+                    );
 
                 }
             );
 
 
         } catch (error) {
-
-            /*
-                Se acontecer algum problema
-                na comunicação com a API,
-                mostramos o erro.
-            */
 
             console.error(
                 "Erro ao registrar chamado:",
@@ -324,8 +462,7 @@ submitButton.addEventListener(
         } finally {
 
             /*
-                Independente de sucesso ou erro,
-                devolvemos o botão ao estado normal.
+                Devolvemos o botão ao estado normal.
             */
 
             submitButton.disabled = false;
@@ -347,16 +484,9 @@ MOSTRAR MENSAGEM
 
 function showMessage(text, type) {
 
-    /*
-        Define o texto da mensagem.
-    */
+    message.textContent =
+        text;
 
-    message.textContent = text;
-
-
-    /*
-        Remove classes anteriores.
-    */
 
     message.classList.remove(
         "success",
@@ -364,15 +494,9 @@ function showMessage(text, type) {
     );
 
 
-    /*
-        Adiciona a classe correspondente.
-
-        success → mensagem verde
-
-        error → mensagem de erro
-    */
-
-    message.classList.add(type);
+    message.classList.add(
+        type
+    );
 
 }
 
@@ -386,6 +510,7 @@ LIMPAR MENSAGEM
 function clearMessage() {
 
     message.textContent = "";
+
 
     message.classList.remove(
         "success",
