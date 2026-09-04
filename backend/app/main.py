@@ -1,5 +1,8 @@
 """
 Ponto de entrada da aplicação FastAPI.
+
+Responsável pela inicialização da API, configuração dos middlewares
+e registro dos módulos de rotas da aplicação.
 """
 
 from fastapi import FastAPI
@@ -7,22 +10,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database.connection import Base, engine
 
-# Importamos os modelos para que o SQLAlchemy
-# conheça as tabelas que precisam ser criadas.
 from app.models.sala import Sala
 from app.models.chamado import Chamado
 
-# Importamos nossas rotas
 from app.routes import salas
 from app.routes import chamados
+from app.routes import qrcodes
 
 
-# Cria as tabelas automaticamente
-# caso elas ainda não existam.
+# Inicialização das estruturas persistidas durante o startup
+# da aplicação. O SQLite é utilizado no ambiente de MVP.
 Base.metadata.create_all(bind=engine)
 
 
-# Criação da aplicação
 app = FastAPI(
     title="QR da Sala API",
     description="API para registro e gerenciamento de problemas em salas.",
@@ -30,8 +30,11 @@ app = FastAPI(
 )
 
 
-# Permite que o frontend converse com o backend.
-# Durante o desenvolvimento deixaremos liberado.
+# Permite a comunicação entre o frontend estático e a API
+# durante o desenvolvimento local.
+#
+# Em produção, a política deverá ser restringida aos domínios
+# autorizados da aplicação.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -41,15 +44,16 @@ app.add_middleware(
 )
 
 
-# Registra as rotas
+# Registro dos módulos responsáveis pelos recursos da API.
 app.include_router(salas.router)
 app.include_router(chamados.router)
+app.include_router(qrcodes.router)
 
 
 @app.get("/")
 def home():
     """
-    Endpoint inicial para verificar se a API está funcionando.
+    Endpoint de identificação da aplicação.
     """
 
     return {
@@ -61,10 +65,10 @@ def home():
 @app.get("/health")
 def health_check():
     """
-    Endpoint utilizado para verificar a saúde da aplicação.
+    Endpoint destinado a health checks e monitoramento da aplicação.
 
-    No futuro esse endpoint poderá ser utilizado
-    por serviços de monitoramento da AWS.
+    A rota pode ser integrada posteriormente a mecanismos de
+    observabilidade e verificação de disponibilidade na infraestrutura.
     """
 
     return {
