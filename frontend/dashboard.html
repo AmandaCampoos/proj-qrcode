@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>QR da Sala | Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+
+    <header class="dashboard-header">
+
+        <div class="dashboard-brand">
+
+            <div class="dashboard-logo">
+                QR
+            </div>
+
+            <div>
+                <h1>QR da Sala</h1>
+
+                <p>
+                    Gestão de ocorrências
+                </p>
+            </div>
+
+        </div>
+
+        <div class="dashboard-label">
+            PAINEL OPERACIONAL
+        </div>
+
+    </header>
+
+
+    <main class="dashboard-container">
+
+        <section class="dashboard-introduction">
+
+            <div>
+                <span class="dashboard-eyebrow">
+                    VISÃO GERAL
+                </span>
+
+                <h2>
+                    Chamados das salas
+                </h2>
+
+                <p>
+                    Acompanhe as ocorrências registradas
+                    e o andamento dos atendimentos.
+                </p>
+            </div>
+
+            <button
+                id="btn-atualizar"
+                class="refresh-button"
+            >
+                ↻ Atualizar
+            </button>
+
+        </section>
+
+
+        <!-- Indicadores operacionais -->
+        <section class="dashboard-summary">
+
+            <div class="summary-card">
+
+                <div class="summary-card-content">
+
+                    <span>
+                        Total de chamados
+                    </span>
+
+                    <strong id="total-chamados">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="summary-icon">
+                    #
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-card-content">
+
+                    <span>
+                        Em aberto
+                    </span>
+
+                    <strong id="chamados-abertos">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="summary-icon">
+                    !
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-card-content">
+
+                    <span>
+                        Em atendimento
+                    </span>
+
+                    <strong id="chamados-atendimento">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="summary-icon">
+                    ◷
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-card-content">
+
+                    <span>
+                        Resolvidos
+                    </span>
+
+                    <strong id="chamados-resolvidos">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="summary-icon">
+                    ✓
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Área principal dos chamados -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="dashboard-eyebrow">
+                        MONITORAMENTO
+                    </span>
+
+                    <h2>
+                        Chamados registrados
+                    </h2>
+
+                    <p>
+                        Ocorrências reportadas pelos usuários
+                        através das salas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="loading"
+                class="dashboard-message"
+            >
+                Carregando chamados...
+            </div>
+
+
+            <div
+                id="erro"
+                class="dashboard-message error"
+                hidden
+            >
+                Não foi possível carregar os chamados.
+            </div>
+
+
+            <div
+                id="lista-chamados"
+                class="tickets-container"
+            >
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="dashboard-footer">
+
+        <span>
+            QR da Sala
+        </span>
+
+        <span>
+            Sistema de gerenciamento de ocorrências
+        </span>
+
+    </footer>
+
+
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
