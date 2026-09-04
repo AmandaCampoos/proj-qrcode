@@ -336,6 +336,30 @@ O QR Code funciona como uma ponte entre o ambiente físico e um sistema digital,
 ---
 
 # 👩‍💻 Status
+```
+🟢 Fundação: 100%
+🟢 Backend básico: 100%
+🟢 Banco/modelagem: 100%
+🟢 Frontend inicial: 100%
+🟢 Integração Front ↔ API: 100%
+🟢 QR Code: 100%
+🟡 Dashboard: próximo
+🔴 Deploy: depois
+🔴 AWS/Terraform: depois
+🔴 CI/CD: depois
+🔴 Observabilidade: depois
+```
+# Autor 
+Dev Amanda Campos Ximenes
+
+# PRINT DA TELA INICIAL
+
+![Tela de início](frontend/print1.png)
+
+# QR CODE GERADO
+
+![QR Code gerado](frontend/print2.png)
+
 
 🚧 Projeto em desenvolvimento.
 
