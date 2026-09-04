@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QR da Sala</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <main class="container">
+
+
+        <!-- ==============================
+             CABEÇALHO
+        =============================== -->
+
+        <header class="header">
+
+            <div class="logo">
+                QR<span>+</span>
+            </div>
+
+            <p class="subtitle">
+                Comunicação rápida de problemas
+            </p>
+
+        </header>
+
+
+        <!-- ==============================
+             INFORMAÇÕES DA SALA
+        =============================== -->
+
+        <section class="room-card">
+
+            <div class="room-icon">
+                🏫
+            </div>
+
+            <p class="room-label">
+                VOCÊ ESTÁ NA
+            </p>
+
+            <!--
+                O JavaScript poderá alterar
+                o nome da sala futuramente.
+            -->
+            <h1 id="room-name">
+                Sala 204
+            </h1>
+
+            <p
+                class="room-location"
+                id="room-location"
+            >
+                Bloco B · Laboratório de Informática
+            </p>
+
+        </section>
+
+
+        <!-- ==============================
+             FORMULÁRIO
+        =============================== -->
+
+        <section class="problem-section">
+
+            <h2>
+                Encontrou algum problema?
+            </h2>
+
+            <p class="instruction">
+                Selecione o que precisa de atenção.
+            </p>
+
+
+            <!--
+                Todas as opções possuem:
+                
+                data-categoria
+
+                Esse valor será enviado
+                posteriormente para a API.
+            -->
+
+            <div class="problem-grid">
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="projetor"
+                >
+
+                    <span class="problem-icon">
+                        📽️
+                    </span>
+
+                    <span>
+                        Projetor
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="internet"
+                >
+
+                    <span class="problem-icon">
+                        🌐
+                    </span>
+
+                    <span>
+                        Internet
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="iluminacao"
+                >
+
+                    <span class="problem-icon">
+                        💡
+                    </span>
+
+                    <span>
+                        Iluminação
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="ar-condicionado"
+                >
+
+                    <span class="problem-icon">
+                        ❄️
+                    </span>
+
+                    <span>
+                        Ar-condicionado
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="tomada"
+                >
+
+                    <span class="problem-icon">
+                        🔌
+                    </span>
+
+                    <span>
+                        Tomada
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option"
+                    data-categoria="limpeza"
+                >
+
+                    <span class="problem-icon">
+                        🧹
+                    </span>
+
+                    <span>
+                        Limpeza
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="problem-option other-option"
+                    data-categoria="outro"
+                >
+
+                    <span class="problem-icon">
+                        •••
+                    </span>
+
+                    <span>
+                        Outro
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- ==============================
+                 DESCRIÇÃO
+            =============================== -->
+
+            <div class="description-container">
+
+                <label for="description">
+
+                    Quer explicar melhor?
+
+                    <span>
+                        (opcional)
+                    </span>
+
+                </label>
+
+
+                <textarea
+                    id="description"
+                    placeholder="Ex.: O projetor não está ligando..."
+                    rows="4"
+                ></textarea>
+
+            </div>
+
+
+            <!-- ==============================
+                 BOTÃO
+            =============================== -->
+
+            <button
+                type="button"
+                class="submit-button"
+                id="submit-button"
+            >
+
+                <span id="submit-text">
+                    Registrar problema
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+
+            <!--
+                Área onde vamos mostrar mensagens
+                de sucesso ou erro.
+            -->
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+        </section>
+
+
+        <!-- ==============================
+             RODAPÉ
+        =============================== -->
+
+        <footer>
+
+            <p>
+                QR da Sala · Comunicação simples, solução rápida.
+            </p>
+
+        </footer>
+
+
+    </main>
+
+
+    <!--
+        Importamos o JavaScript no final da página.
+
+        Isso garante que o HTML já tenha sido
+        carregado quando o JavaScript executar.
+    -->
+
+    <script src="js/sala.js"></script>
+
+</body>
+
+</html>
