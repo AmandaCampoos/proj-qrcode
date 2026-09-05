@@ -1002,3 +1002,106 @@ RESPONSIVIDADE
     }
 
 }
+/* =========================================================
+   DASHBOARD — AÇÕES DOS CHAMADOS
+   ========================================================= */
+
+.ticket-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin-top: 12px;
+}
+
+
+/*
+ * Ações contextuais do chamado.
+ *
+ * O estado disponível é determinado pela camada de
+ * apresentação conforme o ciclo de vida da ocorrência.
+ */
+.status-button {
+    border: 1px solid #2563eb;
+
+    padding: 8px 14px;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.status-button:hover {
+    background: #2563eb;
+    color: #ffffff;
+
+    transform: translateY(-1px);
+}
+
+
+.status-button:active {
+    transform: translateY(0);
+}
+
+
+/*
+ * Estado temporário utilizado durante uma operação
+ * assíncrona de atualização.
+ */
+.status-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/*
+ * Representação de chamados cujo ciclo operacional
+ * foi concluído.
+ */
+.resolved-label {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+
+    background: #f0fdf4;
+    color: #15803d;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/*
+ * Ajuste de layout para telas menores.
+ */
+@media (max-width: 650px) {
+
+    .ticket-actions {
+        justify-content: flex-start;
+    }
+
+
+    .status-button {
+        width: 100%;
+    }
+
+}

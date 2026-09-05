@@ -1,5 +1,8 @@
 """
-Rotas relacionadas aos chamados.
+Endpoints relacionados ao ciclo de vida dos chamados.
+
+O módulo concentra as operações de criação, consulta e atualização
+das ocorrências registradas pelos usuários.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -7,12 +10,6 @@ from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.chamado import Chamado
-from app.models.sala import Sala
-from app.schemas.chamado import (
-    ChamadoCreate,
-    ChamadoResponse,
-    ChamadoStatusUpdate
-)
 
 
 router = APIRouter(
@@ -21,74 +18,52 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "/",
-    response_model=ChamadoResponse
-)
+@router.post("/")
 def criar_chamado(
-    chamado: ChamadoCreate,
+    chamado_data: dict,
     db: Session = Depends(get_db)
 ):
     """
-    Cria um novo chamado.
+    Registra uma nova ocorrência associada a uma sala.
     """
 
-    # Primeiro verificamos se a sala existe
-    sala = (
-        db.query(Sala)
-        .filter(Sala.id == chamado.sala_id)
-        .first()
-    )
-
-    if not sala:
-        raise HTTPException(
-            status_code=404,
-            detail="Sala não encontrada."
-        )
-
-    # Criamos o chamado
-    novo_chamado = Chamado(
-        sala_id=chamado.sala_id,
-        categoria=chamado.categoria,
-        descricao=chamado.descricao,
+    chamado = Chamado(
+        sala_id=chamado_data["sala_id"],
+        categoria=chamado_data["categoria"],
+        descricao=chamado_data.get("descricao"),
         status="aberto"
     )
 
-    db.add(novo_chamado)
+    db.add(chamado)
     db.commit()
-    db.refresh(novo_chamado)
+    db.refresh(chamado)
 
-    return novo_chamado
+    return chamado
 
 
-@router.get(
-    "/",
-    response_model=list[ChamadoResponse]
-)
+@router.get("/")
 def listar_chamados(
     db: Session = Depends(get_db)
 ):
     """
-    Lista todos os chamados.
+    Retorna os chamados registrados em ordem decrescente
+    de criação, priorizando as ocorrências mais recentes.
     """
 
     return (
         db.query(Chamado)
-        .order_by(Chamado.created_at.desc())
+        .order_by(Chamado.id.desc())
         .all()
     )
 
 
-@router.get(
-    "/{chamado_id}",
-    response_model=ChamadoResponse
-)
-def buscar_chamado(
+@router.get("/{chamado_id}")
+def obter_chamado(
     chamado_id: int,
     db: Session = Depends(get_db)
 ):
     """
-    Busca um chamado específico.
+    Retorna os dados de um chamado específico.
     """
 
     chamado = (
@@ -106,31 +81,18 @@ def buscar_chamado(
     return chamado
 
 
-@router.patch(
-    "/{chamado_id}/status",
-    response_model=ChamadoResponse
-)
+@router.patch("/{chamado_id}/status")
 def atualizar_status(
     chamado_id: int,
-    dados: ChamadoStatusUpdate,
+    status_data: dict,
     db: Session = Depends(get_db)
 ):
     """
-    Atualiza o status de um chamado.
+    Atualiza o estado operacional de um chamado.
+
+    O endpoint utiliza PATCH por representar uma alteração parcial
+    do recurso, preservando os demais atributos persistidos.
     """
-
-    # Status permitidos
-    status_validos = [
-        "aberto",
-        "em_atendimento",
-        "resolvido"
-    ]
-
-    if dados.status not in status_validos:
-        raise HTTPException(
-            status_code=400,
-            detail="Status inválido."
-        )
 
     chamado = (
         db.query(Chamado)
@@ -144,8 +106,27 @@ def atualizar_status(
             detail="Chamado não encontrado."
         )
 
-    # Atualiza o status
-    chamado.status = dados.status
+
+    novo_status = status_data.get("status")
+
+
+    # Estados suportados pelo fluxo operacional do sistema.
+    status_validos = {
+        "aberto",
+        "em_atendimento",
+        "resolvido"
+    }
+
+
+    if novo_status not in status_validos:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Status inválido."
+        )
+
+
+    chamado.status = novo_status
 
     db.commit()
     db.refresh(chamado)
