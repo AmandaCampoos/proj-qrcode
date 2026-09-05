@@ -50,16 +50,18 @@ IDENTIFICAÇÃO DA SALA PELA URL
 
 Exemplo:
 
-sala.html?sala=1
+index.html?sala=1
 
-O código abaixo pega o número 1.
-
-Isso será muito importante quando criarmos
-os QR Codes.
+O parâmetro identifica qual sala está
+associada ao QR Code utilizado.
+----------------------------------------------------
 */
 
 const params =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+        window.location.search
+    );
+
 
 const salaId =
     params.get("sala");
@@ -80,11 +82,6 @@ VALIDAÇÃO DA SALA
 ----------------------------------------------------
 */
 
-/*
-    Se a URL não tiver o parâmetro "sala",
-    não conseguimos saber qual sala mostrar.
-*/
-
 if (!salaId) {
 
     showMessage(
@@ -94,11 +91,6 @@ if (!salaId) {
 
 } else {
 
-    /*
-        Se temos o ID da sala,
-        buscamos os dados na API.
-    */
-
     carregarSala();
 
 }
@@ -106,7 +98,7 @@ if (!salaId) {
 
 /*
 ----------------------------------------------------
-CARREGAR SALA
+CARREGAR DADOS DA SALA
 ----------------------------------------------------
 */
 
@@ -114,25 +106,10 @@ async function carregarSala() {
 
     try {
 
-        /*
-            Fazemos uma requisição:
-
-            GET /salas/{id}
-
-            Exemplo:
-
-            GET /salas/1
-        */
-
         const response = await fetch(
             `${API_URL}/salas/${salaId}`
         );
 
-
-        /*
-            Caso a API retorne erro,
-            interrompemos o processo.
-        */
 
         if (!response.ok) {
 
@@ -143,17 +120,13 @@ async function carregarSala() {
         }
 
 
-        /*
-            Transformamos a resposta
-            em objeto JavaScript.
-        */
-
         const sala =
             await response.json();
 
 
         /*
-            Atualizamos o nome da sala.
+            Atualiza o nome da sala
+            com o valor retornado pela API.
         */
 
         roomName.textContent =
@@ -161,11 +134,7 @@ async function carregarSala() {
 
 
         /*
-            Montamos a localização.
-
-            Exemplo:
-
-            Bloco B · Laboratório de informática
+            Monta a localização da sala.
         */
 
         let locationText =
@@ -180,7 +149,8 @@ async function carregarSala() {
 
             }
 
-            locationText += sala.descricao;
+            locationText +=
+                sala.descricao;
 
         }
 
@@ -217,7 +187,7 @@ async function carregarSala() {
 
 /*
 ----------------------------------------------------
-SELEÇÃO DO PROBLEMA
+SELEÇÃO DA CATEGORIA
 ----------------------------------------------------
 */
 
@@ -244,7 +214,7 @@ problemOptions.forEach(
 
 
                 /*
-                    Marca a opção clicada.
+                    Destaca a opção selecionada.
                 */
 
                 option.classList.add(
@@ -253,22 +223,13 @@ problemOptions.forEach(
 
 
                 /*
-                    Guarda a categoria.
-
-                    Exemplo:
-
-                    projetor
-                    internet
-                    limpeza
+                    Recupera a categoria definida
+                    no atributo data-categoria.
                 */
 
                 selectedCategory =
                     option.dataset.categoria;
 
-
-                /*
-                    Remove mensagens anteriores.
-                */
 
                 clearMessage();
 
@@ -281,7 +242,7 @@ problemOptions.forEach(
 
 /*
 ----------------------------------------------------
-ENVIO DO CHAMADO
+REGISTRO DO CHAMADO
 ----------------------------------------------------
 */
 
@@ -289,8 +250,9 @@ submitButton.addEventListener(
     "click",
     async function () {
 
+
         /*
-            Verificamos se existe uma sala.
+            Valida a identificação da sala.
         */
 
         if (!salaId) {
@@ -306,8 +268,7 @@ submitButton.addEventListener(
 
 
         /*
-            Verificamos se o usuário
-            selecionou um problema.
+            Valida a seleção de categoria.
         */
 
         if (!selectedCategory) {
@@ -323,7 +284,7 @@ submitButton.addEventListener(
 
 
         /*
-            Pegamos a descrição.
+            Obtém a descrição informada.
         */
 
         const descriptionValue =
@@ -331,8 +292,8 @@ submitButton.addEventListener(
 
 
         /*
-            Alteramos o botão enquanto
-            estamos enviando os dados.
+            Bloqueia o botão durante a requisição
+            para evitar envios duplicados.
         */
 
         submitButton.disabled = true;
@@ -344,9 +305,7 @@ submitButton.addEventListener(
         try {
 
             /*
-                Enviamos o chamado para a API.
-
-                POST /chamados/
+                Envia a ocorrência para a API.
             */
 
             const response = await fetch(
@@ -364,14 +323,6 @@ submitButton.addEventListener(
 
                     body: JSON.stringify({
 
-                        /*
-                            Aqui está a diferença
-                            principal:
-
-                            agora usamos o ID real
-                            encontrado na URL.
-                        */
-
                         sala_id:
                             Number(salaId),
 
@@ -388,13 +339,14 @@ submitButton.addEventListener(
 
 
             /*
-                Verificamos se a API retornou erro.
+                Trata respostas HTTP de erro.
             */
 
             if (!response.ok) {
 
                 const errorData =
                     await response.json();
+
 
                 throw new Error(
                     errorData.detail ||
@@ -405,7 +357,7 @@ submitButton.addEventListener(
 
 
             /*
-                Pegamos o chamado criado.
+                Obtém o recurso criado.
             */
 
             const data =
@@ -413,7 +365,7 @@ submitButton.addEventListener(
 
 
             /*
-                Mostramos confirmação.
+                Confirma o registro para o usuário.
             */
 
             showMessage(
@@ -423,7 +375,7 @@ submitButton.addEventListener(
 
 
             /*
-                Limpamos o formulário.
+                Limpa o formulário.
             */
 
             description.value = "";
@@ -432,7 +384,7 @@ submitButton.addEventListener(
 
 
             /*
-                Removemos a seleção visual.
+                Remove a seleção visual.
             */
 
             problemOptions.forEach(
@@ -459,10 +411,11 @@ submitButton.addEventListener(
                 "error"
             );
 
+
         } finally {
 
             /*
-                Devolvemos o botão ao estado normal.
+                Libera novamente o botão.
             */
 
             submitButton.disabled = false;
@@ -478,11 +431,14 @@ submitButton.addEventListener(
 
 /*
 ----------------------------------------------------
-MOSTRAR MENSAGEM
+MENSAGENS DA INTERFACE
 ----------------------------------------------------
 */
 
-function showMessage(text, type) {
+function showMessage(
+    text,
+    type
+) {
 
     message.textContent =
         text;
